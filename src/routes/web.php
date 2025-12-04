@@ -21,6 +21,19 @@ Route::middleware('auth')->group(function () {
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
 Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
 
+// Test route to show current user info
+Route::get('/user-info', function () {
+    if (auth()->check()) {
+        return response()->json([
+            'authenticated' => true,
+            'user' => auth()->user(),
+            'role' => auth()->user()->role,
+            'is_admin' => auth()->user()->role === 'admin'
+        ]);
+    }
+    return response()->json(['authenticated' => false]);
+})->name('user.info');
+
 Route::middleware(['auth', 'isAdmin'])->group(function () {
     Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
     Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
