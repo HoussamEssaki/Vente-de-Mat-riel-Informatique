@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -16,25 +17,26 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
+    // Categories routes - accessible to authenticated users only
+    Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+    Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
 });
 
-Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
-Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
-
-// Test route to show current user info
 Route::get('/user-info', function () {
-    if (auth()->check()) {
+    if (Auth::check()) {
+        $user = Auth::user();
         return response()->json([
             'authenticated' => true,
-            'user' => auth()->user(),
-            'role' => auth()->user()->role,
-            'is_admin' => auth()->user()->role === 'admin'
+            'user' => $user,
+            'role' => $user->role,
+            'is_admin' => $user->role === 'admin'
         ]);
     }
     return response()->json(['authenticated' => false]);
 })->name('user.info');
 
-Route::middleware(['auth', 'isAdmin'])->group(function () {
+Route::middleware(['auth', 'isAdmin'])->prefix('admin')->group(function () {
     Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
     Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
     Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
