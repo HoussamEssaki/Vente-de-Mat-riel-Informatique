@@ -1,5 +1,11 @@
 # IT Equipment E-commerce Website
 
+<div align="center">
+
+<img src="assets/project-cover.svg" alt="Vente-de-Mat-riel-Informatique — custom NEXUS project cover" width="100%" />
+
+</div>
+
 A web-based e-commerce project focused on the sale of computer and IT equipment.
 
 ## Overview
